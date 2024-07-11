@@ -151,7 +151,7 @@ class Registro00Import implements RegistroImportInterface
             return;
         }
 
-        $place = Place::firstOrCreate([
+        $place = Place::create([
             'city_id' => $city->getKey(),
             'address' => $this->model->logradouro,
             'number' => (int) (is_numeric($this->model->numero) ? $this->model->numero : null),
