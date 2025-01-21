@@ -196,7 +196,7 @@ class Registro10Import implements RegistroImportInterface
         return $this->getPostgresIntegerArray($arrayLocal);
     }
 
-    private function getArrayAbastecimentoAgua()
+    protected function getArrayAbastecimentoAgua()
     {
         $arrayAbastecimentoAgua = [];
 
@@ -500,7 +500,7 @@ class Registro10Import implements RegistroImportInterface
         return $this->getPostgresIntegerArray($arraySalas);
     }
 
-    private function getArrayRecursosAcessibilidade()
+    protected function getArrayRecursosAcessibilidade()
     {
         $arrayRecursosAcessibilidade = [];
 

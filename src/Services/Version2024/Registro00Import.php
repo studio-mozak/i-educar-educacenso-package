@@ -9,6 +9,7 @@ use App\Models\Educacenso\RegistroEducacenso;
 use App\Models\LegacySchool;
 use iEducar\Packages\Educacenso\Services\Version2019\Registro00Import as Registro00Import2019;
 use iEducar\Packages\Educacenso\Services\Version2023\Models\Registro00Model;
+
 use function iEducar\Packages\Educacenso\Services\Version2023\transformDBArrayInString;
 
 class Registro00Import extends Registro00Import2019
