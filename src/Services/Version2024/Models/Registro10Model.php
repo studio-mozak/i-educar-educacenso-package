@@ -205,12 +205,4 @@ class Registro10Model extends Registro10
         $this->acaoProjetoInterdisciplinares = $arrayColumns[185];
         $this->acaoAmbientalNenhuma = $arrayColumns[186];
     }
-
-
-
-
-
-
-
-
 }
