@@ -1,6 +1,6 @@
 <?php
 
-namespace iEducar\Packages\Educacenso\Layout\Export\Situation\Layout2023;
+namespace iEducar\Packages\Educacenso\Layout\Export\Situation\Layout2024;
 
 use iEducar\Packages\Educacenso\Helpers\ErrorMessage;
 use iEducar\Packages\Educacenso\Layout\Export\Contracts\Validation;
