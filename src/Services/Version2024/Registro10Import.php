@@ -93,7 +93,7 @@ class Registro10Import extends Registro10Import2022
         $instrumentos = parent::getArrayInstrumentosPedagogicos();
         $arrayInstrumentos = transformStringFromDBInArray($instrumentos) ?: [];
 
-        if ($this->model->instrumentosPedagogicosEducacaoProfissional) {
+        if ($this->model->instrumentosPedagogicosAreaHorta) {
             $arrayInstrumentos[] = InstrumentosPedagogicos::MATERIAIS_AREA_HORTA;
         }
 
