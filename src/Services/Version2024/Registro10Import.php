@@ -29,9 +29,9 @@ class Registro10Import extends Registro10Import2022
         $model = $this->model;
 
         $school->nao_ha_funcionarios_para_funcoes = (bool) $model->semFuncionariosParaFuncoes;
-        $school->qtd_tradutor_interprete_libras_outro_ambiente = $model->qtdTradutorInterpreteLibrasOutroAmbiente ?: 0;
-        $school->qtd_agronomos_horticultores = $model->qtdAgronomosHorticultores ?: 0;
-        $school->qtd_revisor_braile = $model->qtdRevisorBraile ?: 0;
+        $school->qtd_tradutor_interprete_libras_outro_ambiente = $model->qtdTradutorInterpreteLibrasOutroAmbiente ?: null;
+        $school->qtd_agronomos_horticultores = $model->qtdAgronomosHorticultores ?: null;
+        $school->qtd_revisor_braile = $model->qtdRevisorBraile ?: null;
         $school->acao_area_ambiental = $model->acaoAreaAmbiental;
         $school->acoes_area_ambiental = $this->getArrayAcoesAreaAmbiental();
 
