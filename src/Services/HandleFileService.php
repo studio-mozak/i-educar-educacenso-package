@@ -8,6 +8,8 @@ use iEducar\Packages\Educacenso\Jobs\EducacensoImportJob;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use iEducar\Packages\Educacenso\Exception\InvalidFileDate;
+use iEducar\Packages\Educacenso\Exception\InvalidFileYear;
 
 class HandleFileService
 {
