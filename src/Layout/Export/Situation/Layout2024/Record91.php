@@ -38,6 +38,10 @@ class Record91 extends Validation
                     $index = array_search($value, array_column($data, '4'), true);
                     $schoolClassId = $data[$index]['3'];
 
+                    if (str_contains($schoolClassId, '-')) {
+                        $schoolClassId = explode('-', $schoolClassId)[0];
+                    }
+
                     $errorMessage = new ErrorMessage($fail, [
                         'key' => 'cod_turma',
                         'breadcrumb' => 'Escolas -> Cadastros -> Turmas -> Dados Adicionais -> Código INEP',
