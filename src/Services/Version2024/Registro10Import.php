@@ -148,8 +148,4 @@ class Registro10Import extends Registro10Import2022
 
         return $this->getPostgresIntegerArray($arrayAreas);
     }
-
-
-
-
 }
