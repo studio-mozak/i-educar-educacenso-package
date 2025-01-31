@@ -17,6 +17,7 @@ class Record91 extends Validation
     public function rules(): array
     {
         $data = $this->data;
+
         return [
             'turma_matriculas.*.1' => [
                 'required',
@@ -45,17 +46,20 @@ class Record91 extends Validation
                     ]);
 
                     if (is_null($value) || $value == '') {
-                        $schoolClass = LegacySchoolClass::find($schoolClassId);
+                        $schoolClass = $this->getSchoolClass($schoolClassId);
+
                         $errorMessage->toString([
                             'message' => 'Dados para formular o registro 91 inválidos. O campo Código INEP da Turma ' . $schoolClass->name . ' é obrigatório.',
                         ]);
                     } elseif (strlen($value) > 10) {
-                        $schoolClass = LegacySchoolClass::find($schoolClassId);
+                        $schoolClass = $this->getSchoolClass($schoolClassId);
+
                         $errorMessage->toString([
                             'message' => 'Dados para formular o registro 91 inválidos. O campo Código INEP da Turma ' . $schoolClass->name . ' deve possuir no máximo 10 caracteres.',
                         ]);
                     } elseif (is_numeric($value) == false) {
-                        $schoolClass = LegacySchoolClass::find($schoolClassId);
+                        $schoolClass = $this->getSchoolClass($schoolClassId);
+
                         $errorMessage->toString([
                             'message' => 'Dados para formular o registro 91 inválidos. O campo Código INEP da Turma ' . $schoolClass->name . ' deve conter apenas números.',
                         ]);
@@ -63,7 +67,7 @@ class Record91 extends Validation
                 }
             ],
             'turma_matriculas.*' => [
-                function ($attribute, $value, $fail) use ($data): void {
+                function ($attribute, $value, $fail): void {
                     $inep = $value['5'];
                     $studentId = $value['6'];
 
@@ -168,5 +172,15 @@ class Record91 extends Validation
                 'message' => 'Dados para formular o registro 91 inválidos. O campo "Etapa de Ensino" deve ser um valor entre 1 e 7.',
             ]),
         ];
+    }
+
+    private function getSchoolClass($schoolClassId)
+    {
+        if (str_contains($schoolClassId, '-')) {
+            $schoolClassId = explode('-', $schoolClassId)[0];
+        }
+        $schoolClass = LegacySchoolClass::find($schoolClassId);
+
+        return $schoolClass->name;
     }
 }
