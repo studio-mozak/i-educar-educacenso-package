@@ -180,6 +180,10 @@ class Record91 extends Validation
 
     private function getSchoolClass($schoolClassId): LegacySchoolClass
     {
+        /*
+         * Para turmas integrais com enturmações parciais e concateado o turno no código da turma
+         * Mas para busca da turma, é necessário remover o turno
+         */
         if (str_contains($schoolClassId, '-')) {
             $schoolClassId = explode('-', $schoolClassId)[0];
         }
