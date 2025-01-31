@@ -35,7 +35,7 @@ class ExportSituationController extends Controller
         $array = [
             'escola' => $repository->getDataRecord89($request->get('year'), $request->get('school_id')),
             'matriculas' => $repository->getDataRecord90($request->get('year'), $request->get('school_id')),
-            'turma_matriculas' => $repository->getDataRecord91($request->get('year'), $request->get('school_id'))
+            'turma_matriculas' => $repository->getDataRecord91($request->get('year'), $request->get('school_id')),
         ];
 
         $classRulesRecord89 = 'iEducar\Packages\Educacenso\Layout\Export\Situation\Layout' . $request->get('year') . '\Record89';
@@ -68,6 +68,7 @@ class ExportSituationController extends Controller
         );
 
         $name = 'sit_' . $request->get('school_id') . '_' . $request->get('year') . '.txt';
+
         return Excel::download(
             export: new Export($array),
             fileName: $name,
