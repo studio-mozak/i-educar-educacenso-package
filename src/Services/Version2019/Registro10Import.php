@@ -372,7 +372,7 @@ class Registro10Import implements RegistroImportInterface
         return $this->getPostgresIntegerArray($arrayLaboratorios);
     }
 
-    private function getArrayAreasExternas()
+    protected function getArrayAreasExternas()
     {
         $arrayAreas = [];
 

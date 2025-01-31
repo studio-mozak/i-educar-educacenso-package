@@ -5,6 +5,7 @@ namespace iEducar\Packages\Educacenso\Services\Version2024;
 use App\Models\Educacenso\RegistroEducacenso;
 use iEducar\Modules\Educacenso\Model\AbastecimentoAgua;
 use iEducar\Modules\Educacenso\Model\AcoesAmbientais;
+use iEducar\Modules\Educacenso\Model\AreasExternas;
 use iEducar\Modules\Educacenso\Model\InstrumentosPedagogicos;
 use iEducar\Modules\Educacenso\Model\RecursosAcessibilidade;
 use iEducar\Modules\Educacenso\Model\SalasAtividades;
@@ -53,10 +54,6 @@ class Registro10Import extends Registro10Import2022
 
         if ($this->model->dependenciaSalaEstudioGravacaoEdicao) {
             $arraySalas[] = SalasAtividades::ESTUDIO_GRAVACAO_EDICAO;
-        }
-
-        if ($this->model->dependenciaAreaHorta) {
-            $arraySalas[] = SalasAtividades::AREA_HORTA;
         }
 
         return parent::getPostgresIntegerArray($arraySalas);
@@ -138,4 +135,21 @@ class Registro10Import extends Registro10Import2022
 
         return $this->getPostgresIntegerArray($arrayAcoesAreaAmbiental);
     }
+
+    protected function getArrayAreasExternas()
+    {
+        $arrayAreasExternas = parent::getArrayRecursosAcessibilidade();
+
+        $arrayAreas = transformStringFromDBInArray($arrayAreasExternas) ?: [];
+
+        if ($this->model->dependenciaAreaHorta) {
+            $arrayAreas[] = AreasExternas::HORTA;
+        }
+
+        return $this->getPostgresIntegerArray($arrayAreas);
+    }
+
+
+
+
 }
