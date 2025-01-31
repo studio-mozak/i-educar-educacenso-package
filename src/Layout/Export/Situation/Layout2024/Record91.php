@@ -174,13 +174,13 @@ class Record91 extends Validation
         ];
     }
 
-    private function getSchoolClass($schoolClassId)
+    private function getSchoolClass($schoolClassId): LegacySchoolClass
     {
         if (str_contains($schoolClassId, '-')) {
             $schoolClassId = explode('-', $schoolClassId)[0];
         }
         $schoolClass = LegacySchoolClass::find($schoolClassId);
 
-        return $schoolClass->name;
+        return $schoolClass;
     }
 }
