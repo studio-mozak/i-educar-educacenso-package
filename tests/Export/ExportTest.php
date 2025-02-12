@@ -150,7 +150,7 @@ class ExportTest extends TestCase
             'ano' => $this->year,
         ];
         $response10 = $this->get('/module/Api/EducacensoAnalise?' . http_build_query($data10));
-        dd($response10);
+
         $response10->assertSuccessful()
             ->assertJsonCount(0, 'mensagens')
             ->assertJsonCount(0, 'msgs')

@@ -15,7 +15,7 @@ return new class () extends Migration {
             ->where('parent_id', $educacensoMenu->getKey())
             ->first();
 
-        if($menuImportacao) {
+        if ($menuImportacao) {
             Menu::updateOrCreate([
                 'process' => 9998849,
             ], [
