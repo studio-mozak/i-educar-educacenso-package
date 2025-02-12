@@ -38,6 +38,10 @@ class Record90 extends Validation
 
                     $schoolClassId = $data[$index]['3'];
 
+                    if (str_contains($schoolClassId, '-')) {
+                        $schoolClassId = explode('-', $schoolClassId)[0];
+                    }
+
                     $errorMessage = new ErrorMessage($fail, [
                         'key' => 'cod_turma',
                         'breadcrumb' => 'Escolas -> Cadastros -> Turmas -> Dados Adicionais -> Código INEP',
@@ -46,17 +50,17 @@ class Record90 extends Validation
                     ]);
 
                     if (is_null($value) || $value == '') {
-                        $schoolClass = LegacySchoolClass::find($schoolClassId);
+                        $schoolClass = $this->getSchoolClass($schoolClassId);
                         $errorMessage->toString([
                             'message' => 'Dados para formular o registro 90 inválidos. O campo Código INEP da Turma ' . $schoolClass->name . ' é obrigatório.',
                         ]);
                     } elseif (strlen($value) > 10) {
-                        $schoolClass = LegacySchoolClass::find($schoolClassId);
+                        $schoolClass = $this->getSchoolClass($schoolClassId);
                         $errorMessage->toString([
                             'message' => 'Dados para formular o registro 90 inválidos. O campo Código INEP da Turma ' . $schoolClass->name . ' deve possuir no máximo 10 caracteres.',
                         ]);
                     } elseif (is_numeric($value) == false) {
-                        $schoolClass = LegacySchoolClass::find($schoolClassId);
+                        $schoolClass = $this->getSchoolClass($schoolClassId);
                         $errorMessage->toString([
                             'message' => 'Dados para formular o registro 90 inválidos. O campo Código INEP da Turma ' . $schoolClass->name . ' deve conter apenas números.',
                         ]);
@@ -181,5 +185,19 @@ class Record90 extends Validation
                 'message' => 'Dados para formular o registro 90 inválidos. O campo "Situação de matrícula" deve ser um dos seguintes valores: 1, 2, 3, 4, 5, 6 ou 7.',
             ]),
         ];
+    }
+
+    private function getSchoolClass($schoolClassId): LegacySchoolClass
+    {
+        /*
+         * Para turmas integrais com enturmações parciais e concateado o turno no código da turma
+         * Mas para busca da turma, é necessário remover o turno
+         */
+        if (str_contains($schoolClassId, '-')) {
+            $schoolClassId = explode('-', $schoolClassId)[0];
+        }
+        $schoolClass = LegacySchoolClass::find($schoolClassId);
+
+        return $schoolClass;
     }
 }
