@@ -26,7 +26,7 @@ class EducacensoImportInepService
 
     public function __construct(private EducacensoInepImport $educacensoInepImport, private array $data)
     {
-        $this->dataBaseEducacenso = config('educacenso.data_base.2022');
+        $this->dataBaseEducacenso = config('educacenso.data_base.2024');
     }
 
     public static function getDataBySchool(UploadedFile $file): Generator
@@ -81,11 +81,32 @@ class EducacensoImportInepService
 
     private function updateSchoolClass($id, $inep): void
     {
+        $data = [
+            'cod_turma_inep' => $inep,
+        ];
+
+        if (str_contains($id, '-')) {
+            [$id, $turnoId] = explode('-', $id);
+
+            $data['turma_turno_id'] = $turnoId;
+
+            SchoolClassInep::query()
+                ->updateOrCreate([
+                    'cod_turma' => $id,
+                    'turma_turno_id' => $turnoId,
+                ], $data);
+
+            return;
+        }
+
         $doesntExist = LegacySchoolClass::query()->whereKey($id)->doesntExist();
         if ($doesntExist) {
             return;
         }
-        SchoolClassInep::query()->updateOrCreate(['cod_turma' => $id], ['cod_turma_inep' => $inep]);
+        SchoolClassInep::query()
+            ->updateOrCreate([
+                'cod_turma' => $id,
+            ], $data);
     }
 
     private function updateEmployee($id, $inep): void
@@ -107,36 +128,37 @@ class EducacensoImportInepService
         foreach ($students as $student) {
             StudentInep::query()
                 ->updateOrCreate([
-                    'cod_aluno' => $student->getKey()
+                    'cod_aluno' => $student->getKey(),
                 ], [
-                    'cod_aluno_inep' => $inep
+                    'cod_aluno_inep' => $inep,
                 ]);
-        }
 
-        $schoolClassInep = SchoolClassInep::query()
-            ->where('cod_turma_inep', $inepSchoolClass)
-            ->first();
 
-        if ($schoolClassInep) {
-            $enrollment = LegacyEnrollment::query()
-                ->where('ref_cod_turma', $schoolClassInep->cod_turma)
-                ->where('data_enturmacao', '<=', $this->dataBaseEducacenso)
-                ->whereHas('registration', function ($q) use ($student): void {
-                    $q->where('ref_cod_aluno', $student->getKey());
-                })
-                ->orderByDesc('data_enturmacao')
-                ->get(['id'])
+            $schoolClassInep = SchoolClassInep::query()
+                ->where('cod_turma_inep', $inepSchoolClass)
                 ->first();
 
-            if ($enrollment) {
-                EnrollmentInep::query()
-                    ->updateOrCreate([
-                        'matricula_turma_id' => $enrollment->getKey(),
-                        'matricula_inep' => $matricula
-                    ], [
-                        'matricula_turma_id' => $enrollment->getKey(),
-                        'matricula_inep' => $matricula
-                    ]);
+            if ($schoolClassInep) {
+                $enrollment = LegacyEnrollment::query()
+                    ->where('ref_cod_turma', $schoolClassInep->cod_turma)
+                    ->where('data_enturmacao', '<=', $this->dataBaseEducacenso)
+                    ->whereHas('registration', function ($q) use ($student): void {
+                        $q->where('ref_cod_aluno', $student->getKey());
+                    })
+                    ->orderByDesc('data_enturmacao')
+                    ->get(['id'])
+                    ->first();
+
+                if ($enrollment) {
+                    EnrollmentInep::query()
+                        ->updateOrCreate([
+                            'matricula_turma_id' => $enrollment->getKey(),
+                            'matricula_inep' => $matricula,
+                        ], [
+                            'matricula_turma_id' => $enrollment->getKey(),
+                            'matricula_inep' => $matricula,
+                        ]);
+                }
             }
         }
     }

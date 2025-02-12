@@ -5,7 +5,6 @@ namespace iEducar\Packages\Educacenso\Tests\Services\Version2019;
 use App\Models\Educacenso\Registro00;
 use App\Models\LegacySchool;
 use App\Models\LegacySchoolAcademicYear;
-
 use App\Models\SchoolInep;
 use App\User;
 use Database\Factories\LegacySchoolFactory;
