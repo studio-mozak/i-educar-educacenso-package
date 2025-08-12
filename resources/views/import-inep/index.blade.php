@@ -3,7 +3,7 @@
 @push('styles')
     <link rel="stylesheet" type="text/css" href="{{ Asset::get('css/ieducar.css') }}"/>
     <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.1.0') }}" rel="stylesheet" />
-    <link rel="stylesheet" href="{{ Asset::get('assets/css/style_ensinus.css') }}">
+     <link rel="stylesheet" type="text/css" href="{{ Asset::get('css/style_ensinus.css') }}" />
 @endpush
 
 @section('content')
@@ -50,7 +50,7 @@
             </div>
 
             <div style="text-align: center; margin-top: 30px; margin-bottom: 30px">
-                <a href="{{ route('educacenso.import.inep.create') }}" class="btn-green">Nova Importação</a>
+                <a href="{{ route('educacenso.import.inep.create') }}" class="new-button">Nova Importação</a>
             </div>
         </div>
     </div>

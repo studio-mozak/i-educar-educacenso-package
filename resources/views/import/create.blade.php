@@ -3,6 +3,7 @@
 @push('styles')
     <link rel="stylesheet" type="text/css" href="{{ Asset::get('css/ieducar.css') }}" />
     <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.1.0') }}" rel="stylesheet" />
+     <link rel="stylesheet" type="text/css" href="{{ Asset::get('css/style_ensinus.css') }}" />
 @endpush
 
 @section('content')
@@ -69,7 +70,7 @@
 
 
                     <div style="text-align: center; margin-bottom: 10px">
-                        <button id="export-button" class="btn-green" type="submit">Importar</button>
+                        <button id="export-button" class="new-button" type="submit">Importar</button>
                     </div>
                 </div>
             </div>
@@ -140,7 +141,7 @@
             }
 
             .tablecadastro {
-                margin-bottom: 0px;
+                margin-bottom: 20px;
             }
         </style>
         <link type='text/css' rel='stylesheet' href='{{ Asset::get("/vendor/legacy/Portabilis/Assets/Plugins/Chosen/chosen.css") }}'>
