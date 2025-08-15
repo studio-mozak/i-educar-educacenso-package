@@ -2,6 +2,8 @@
 
 @push('styles')
     <link rel="stylesheet" type="text/css" href="{{ Asset::get('css/ieducar.css') }}" />
+    <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.1.0') }}" rel="stylesheet" />
+     <link rel="stylesheet" type="text/css" href="{{ Asset::get('css/style_ensinus.css') }}" />
 @endpush
 
 @section('content')
@@ -10,65 +12,68 @@
             method="post"
             enctype="multipart/form-data"
     >
-        <table class="tablecadastro" width="100%" border="0" cellpadding="2" cellspacing="0">
-            <tbody>
-                <tr>
-                    <td class="formdktd" colspan="2" height="24"><b>Importações</b></td>
-                </tr>
-                <tr>
-                    <td class="formlttd" valign="top">
-                        <span class="form">
-                            Ano
-                        </span>
-                        <span class="campo_obrigatorio">*</span>
-                    </td>
-                    <td class="formlttd" valign="top">
-                        <span class="form">
-                            @include('form.select-year', ['required' => 'required'])
-                        </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="formmdtd" valign="top">
-                        <span class="form">
-                            Data de entrada das matrículas
-                        </span>
-                        <span class="campo_obrigatorio">*</span>
-                        <br/>
-                        <sub style="vertical-align: top;">
-                            dd/mm/aaaa
-                        </sub>
-                    </td>
-                    <td class="formmdtd" valign="top">
-                        <span class="form">
-                            @include('layout.input.date')
-                        </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="formlttd" valign="top">
-                        <span class="form">
-                            Arquivo
-                        </span>
-                        <span class="campo_obrigatorio">*</span>
-                    </td>
-                    <td class="formlttd" valign="top">
-                        <span class="form">
-                            @include('layout.input.file')
-                        </span>
-                        <br/>
-                        <span style="font-style: italic; font-size: 12px;">
-                            * Somente arquivos com formato txt serão aceitos
-                        </span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <h1 class="title_ensinus"><strong>Importações</strong></h1>
+        <div class="card" style="padding: 22px; margin-top: 10px;">
+            <div class="card-body px-0 pt-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="tablecadastro" width="100%" border="0" cellpadding="2" cellspacing="0">
+                        <tbody>
+                            <tr>
+                                <td class="formlttd" valign="top">
+                                    <span class="form">
+                                        Ano
+                                    </span>
+                                    <span class="campo_obrigatorio">*</span>
+                                </td>
+                                <td class="formlttd" valign="top">
+                                    <span class="form">
+                                        @include('form.select-year', ['required' => 'required'])
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="formmdtd" valign="top">
+                                    <span class="form">
+                                        Data de entrada das matrículas
+                                    </span>
+                                    <span class="campo_obrigatorio">*</span>
+                                    <br/>
+                                    <sub style="vertical-align: top;">
+                                        dd/mm/aaaa
+                                    </sub>
+                                </td>
+                                <td class="formmdtd" valign="top">
+                                    <span class="form">
+                                        @include('layout.input.date')
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="formlttd" valign="top">
+                                    <span class="form">
+                                        Arquivo
+                                    </span>
+                                    <span class="campo_obrigatorio">*</span>
+                                </td>
+                                <td class="formlttd" valign="top">
+                                    <span class="form">
+                                        @include('layout.input.file')
+                                    </span>
+                                    <br/>
+                                    <span style="font-style: italic; font-size: 12px;">
+                                        * Somente arquivos com formato txt serão aceitos
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-        <div class="separator"></div>
 
-        <div style="text-align: center; margin-bottom: 10px">
-            <button id="export-button" class="btn-green" type="submit">Importar</button>
+                    <div style="text-align: center; margin-bottom: 10px">
+                        <button id="export-button" class="new-button" type="submit">Importar</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <style>
@@ -133,6 +138,10 @@
 
             .text-warning {
                 color: #958f73;
+            }
+
+            .tablecadastro {
+                margin-bottom: 20px;
             }
         </style>
         <link type='text/css' rel='stylesheet' href='{{ Asset::get("/vendor/legacy/Portabilis/Assets/Plugins/Chosen/chosen.css") }}'>
