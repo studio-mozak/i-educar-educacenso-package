@@ -43,9 +43,13 @@ class Registro00Import extends Registro00Import2019
 
             $city = City::where('ibge_code', $model->codigoIbgeMunicipio)->first();
 
-            $district = District::where('city_id', $city->id)
-                ->where('ibge_code', $ibge_code)
-                ->first();
+            if ($city) {
+                $district = District::where('city_id', $city->id)
+                    ->where('ibge_code', $ibge_code)
+                    ->first();
+            } else {
+                $district = null;
+            }
 
             if ($district) {
                 $school->iddis = $district->getKey();

@@ -90,14 +90,6 @@ class Registro20Import implements RegistroImportInterface
 
         $tipoAtendimento = $this->getTipoAtendimento();
 
-        // Verifica se já é array, se não, transforma em array com um único elemento
-        if (!is_array($tipoAtendimento)) {
-            $tipoAtendimento = [$tipoAtendimento];
-        }
-
-        // Converte para string no formato PostgreSQL array '{val1,val2,...}'
-        $tipoAtendimentoSQL = '{' . implode(',', $tipoAtendimento) . '}';
-
         $schoolClass = LegacySchoolClass::create(
             [
                 'ref_ref_cod_escola' => $school->getKey(),
@@ -110,7 +102,7 @@ class Registro20Import implements RegistroImportInterface
                 'hora_inicial' => $horaInicial,
                 'hora_final' => $horaFinal,
                 'dias_semana' => $this->getArrayDaysWeek(),
-                'tipo_atendimento' => $tipoAtendimentoSQL,
+                'tipo_atendimento' => $tipoAtendimento,
                 'atividades_complementares' => $this->getArrayAtividadesComplementares(),
                 'local_funcionamento_diferenciado' => (int) $model->localFuncionamentoDiferenciado,
                 'etapa_educacenso' => (int) $model->etapaEducacenso,
@@ -891,7 +883,7 @@ class Registro20Import implements RegistroImportInterface
     }
 
     /**
-     * @return int|null
+     * @return int
      */
     private function getTipoAtendimento()
     {
@@ -907,7 +899,8 @@ class Registro20Import implements RegistroImportInterface
             return TipoAtendimentoTurma::AEE;
         }
 
-        return;
+        // Valor padrão caso nenhum tipo de atendimento seja especificado
+        return TipoAtendimentoTurma::ESCOLARIZACAO;
     }
 
     /**
