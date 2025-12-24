@@ -885,7 +885,7 @@ class Registro20Import implements RegistroImportInterface
     {
         return '{' . implode(',', $array) . '}';
     }
-    
+
 
     /**
      * @return int
@@ -907,7 +907,7 @@ class Registro20Import implements RegistroImportInterface
         }
 
         return '{' . implode(',', $tipos) . '}';
-    }
+        }
 
 
     private function getTipoAtendimento2024()
@@ -933,14 +933,28 @@ class Registro20Import implements RegistroImportInterface
      */
     private function getArrayAtividadesComplementares()
     {
-        $arrayAtividades[] = $this->model->tipoAtividadeComplementar1;
-        $arrayAtividades[] = $this->model->tipoAtividadeComplementar2;
-        $arrayAtividades[] = $this->model->tipoAtividadeComplementar3;
-        $arrayAtividades[] = $this->model->tipoAtividadeComplementar4;
-        $arrayAtividades[] = $this->model->tipoAtividadeComplementar5;
-        $arrayAtividades[] = $this->model->tipoAtividadeComplementar6;
+        $arrayAtividades = [];
 
-        return $this->getPostgresIntegerArray(array_filter($arrayAtividades));
+        if ($this->model->tipoAtividadeComplementar1) {
+            $arrayAtividades[] = $this->model->tipoAtividadeComplementar1;
+        }
+        if ($this->model->tipoAtividadeComplementar2) {
+            $arrayAtividades[] = $this->model->tipoAtividadeComplementar2;
+        }
+        if ($this->model->tipoAtividadeComplementar3) {
+            $arrayAtividades[] = $this->model->tipoAtividadeComplementar3;
+        }
+        if ($this->model->tipoAtividadeComplementar4) {
+            $arrayAtividades[] = $this->model->tipoAtividadeComplementar4;
+        }
+        if ($this->model->tipoAtividadeComplementar5) {
+            $arrayAtividades[] = $this->model->tipoAtividadeComplementar5;
+        }
+        if ($this->model->tipoAtividadeComplementar6) {
+            $arrayAtividades[] = $this->model->tipoAtividadeComplementar6;
+        }
+
+        return $this->getPostgresIntegerArray($arrayAtividades);
     }
 
     private function createInepTurma(LegacySchoolClass $schoolClass): void
