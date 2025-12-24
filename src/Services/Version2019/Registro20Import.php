@@ -88,7 +88,11 @@ class Registro20Import implements RegistroImportInterface
         $horaInicial = sprintf('%02d:%02d:00', intval($model->horaInicial), intval($model->horaInicialMinuto));
         $horaFinal = sprintf('%02d:%02d:00', intval($model->horaFinal), intval($model->horaFinalMinuto));
 
-        $tipoAtendimento = $this->getTipoAtendimento();
+        if ($year == 2023) {
+            $tipoAtendimento = $this->getTipoAtendimento2023();
+        } else {
+            $tipoAtendimento = $this->getTipoAtendimento();
+        }
 
         $schoolClass = LegacySchoolClass::create(
             [
@@ -881,11 +885,32 @@ class Registro20Import implements RegistroImportInterface
     {
         return '{' . implode(',', $array) . '}';
     }
+    
 
     /**
      * @return int
      */
-    private function getTipoAtendimento()
+        private function getTipoAtendimento()
+    {
+        $tipos = [];
+
+        if ($this->model->tipoAtendimentoEscolarizacao) {
+            $tipos[] = TipoAtendimentoTurma::CURRICULAR_ETAPA_ENSINO;
+        }
+
+        if ($this->model->tipoAtendimentoAtividadeComplementar) {
+            $tipos[] = TipoAtendimentoTurma::ATIVIDADE_COMPLEMENTAR;
+        }
+
+        if ($this->model->tipoAtendimentoAee) {
+            $tipos[] = TipoAtendimentoTurma::AEE;
+        }
+
+        return '{' . implode(',', $tipos) . '}';
+    }
+
+
+    private function getTipoAtendimento2023()
     {
         if ($this->model->tipoAtendimentoEscolarizacao) {
             return TipoAtendimentoTurma::ESCOLARIZACAO;
