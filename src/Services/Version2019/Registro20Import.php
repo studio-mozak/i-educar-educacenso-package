@@ -890,7 +890,7 @@ class Registro20Import implements RegistroImportInterface
     /**
      * @return int
      */
-        private function getTipoAtendimento()
+    private function getTipoAtendimento()
     {
         $tipos = [];
 
