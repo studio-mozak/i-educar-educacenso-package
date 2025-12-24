@@ -88,15 +88,11 @@ class Registro20Import implements RegistroImportInterface
         $horaInicial = sprintf('%02d:%02d:00', intval($model->horaInicial), intval($model->horaInicialMinuto));
         $horaFinal = sprintf('%02d:%02d:00', intval($model->horaFinal), intval($model->horaFinalMinuto));
 
-        $tipoAtendimento = $this->getTipoAtendimento();
-
-        // Verifica se já é array, se não, transforma em array com um único elemento
-        if (!is_array($tipoAtendimento)) {
-            $tipoAtendimento = [$tipoAtendimento];
+        if ($year == 2024) {
+            $tipoAtendimento = $this->getTipoAtendimento2024();
+        } else {
+            $tipoAtendimento = $this->getTipoAtendimento();
         }
-
-        // Converte para string no formato PostgreSQL array '{val1,val2,...}'
-        $tipoAtendimentoSQL = '{' . implode(',', $tipoAtendimento) . '}';
 
         $schoolClass = LegacySchoolClass::create(
             [
@@ -110,7 +106,7 @@ class Registro20Import implements RegistroImportInterface
                 'hora_inicial' => $horaInicial,
                 'hora_final' => $horaFinal,
                 'dias_semana' => $this->getArrayDaysWeek(),
-                'tipo_atendimento' => $tipoAtendimentoSQL,
+                'tipo_atendimento' => $tipoAtendimento,
                 'atividades_complementares' => $this->getArrayAtividadesComplementares(),
                 'local_funcionamento_diferenciado' => (int) $model->localFuncionamentoDiferenciado,
                 'etapa_educacenso' => (int) $model->etapaEducacenso,
@@ -889,11 +885,32 @@ class Registro20Import implements RegistroImportInterface
     {
         return '{' . implode(',', $array) . '}';
     }
+    
 
     /**
-     * @return int|null
+     * @return int
      */
     private function getTipoAtendimento()
+    {
+        $tipos = [];
+
+        if ($this->model->tipoAtendimentoEscolarizacao) {
+            $tipos[] = TipoAtendimentoTurma::CURRICULAR_ETAPA_ENSINO;
+        }
+
+        if ($this->model->tipoAtendimentoAtividadeComplementar) {
+            $tipos[] = TipoAtendimentoTurma::ATIVIDADE_COMPLEMENTAR;
+        }
+
+        if ($this->model->tipoAtendimentoAee) {
+            $tipos[] = TipoAtendimentoTurma::AEE;
+        }
+
+        return '{' . implode(',', $tipos) . '}';
+    }
+
+
+    private function getTipoAtendimento2024()
     {
         if ($this->model->tipoAtendimentoEscolarizacao) {
             return TipoAtendimentoTurma::ESCOLARIZACAO;
@@ -907,7 +924,8 @@ class Registro20Import implements RegistroImportInterface
             return TipoAtendimentoTurma::AEE;
         }
 
-        return;
+        // Valor padrão caso nenhum tipo de atendimento seja especificado
+        return TipoAtendimentoTurma::ESCOLARIZACAO;
     }
 
     /**
