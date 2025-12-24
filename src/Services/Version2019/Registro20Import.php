@@ -88,8 +88,8 @@ class Registro20Import implements RegistroImportInterface
         $horaInicial = sprintf('%02d:%02d:00', intval($model->horaInicial), intval($model->horaInicialMinuto));
         $horaFinal = sprintf('%02d:%02d:00', intval($model->horaFinal), intval($model->horaFinalMinuto));
 
-        if ($year == 2023) {
-            $tipoAtendimento = $this->getTipoAtendimento2023();
+        if ($year == 2024) {
+            $tipoAtendimento = $this->getTipoAtendimento2024();
         } else {
             $tipoAtendimento = $this->getTipoAtendimento();
         }
@@ -910,7 +910,7 @@ class Registro20Import implements RegistroImportInterface
     }
 
 
-    private function getTipoAtendimento2023()
+    private function getTipoAtendimento2024()
     {
         if ($this->model->tipoAtendimentoEscolarizacao) {
             return TipoAtendimentoTurma::ESCOLARIZACAO;
