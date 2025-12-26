@@ -907,7 +907,7 @@ class Registro20Import implements RegistroImportInterface
         }
 
         return '{' . implode(',', $tipos) . '}';
-        }
+    }
 
 
     private function getTipoAtendimento2024()
