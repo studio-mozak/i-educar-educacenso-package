@@ -88,12 +88,6 @@ class Registro20Import implements RegistroImportInterface
         $horaInicial = sprintf('%02d:%02d:00', intval($model->horaInicial), intval($model->horaInicialMinuto));
         $horaFinal = sprintf('%02d:%02d:00', intval($model->horaFinal), intval($model->horaFinalMinuto));
 
-        if ($year == 2024) {
-            $tipoAtendimento = $this->getTipoAtendimento2024();
-        } else {
-            $tipoAtendimento = $this->getTipoAtendimento();
-        }
-
         $schoolClass = LegacySchoolClass::create(
             [
                 'ref_ref_cod_escola' => $school->getKey(),
@@ -101,12 +95,12 @@ class Registro20Import implements RegistroImportInterface
                 'ref_cod_curso' => $course->getKey(),
                 'ref_cod_turma_tipo' => $schoolClassType->getKey(),
                 'ref_usuario_cad' => $this->user->getKey(),
-                'nm_turma' => $model->nomeTurma,
+                'nm_turma' => str_replace('&#4294967295;', 'º', $model->nomeTurma),
                 'tipo_mediacao_didatico_pedagogico' => $model->tipoMediacaoDidaticoPedagogico,
                 'hora_inicial' => $horaInicial,
                 'hora_final' => $horaFinal,
                 'dias_semana' => $this->getArrayDaysWeek(),
-                'tipo_atendimento' => $tipoAtendimento,
+                'tipo_atendimento' => $this->getTipoAtendimento(),
                 'atividades_complementares' => $this->getArrayAtividadesComplementares(),
                 'local_funcionamento_diferenciado' => (int) $model->localFuncionamentoDiferenciado,
                 'etapa_educacenso' => (int) $model->etapaEducacenso,
@@ -886,9 +880,8 @@ class Registro20Import implements RegistroImportInterface
         return '{' . implode(',', $array) . '}';
     }
 
-
     /**
-     * @return int
+     * @return string
      */
     private function getTipoAtendimento()
     {
@@ -909,51 +902,19 @@ class Registro20Import implements RegistroImportInterface
         return '{' . implode(',', $tipos) . '}';
     }
 
-
-    private function getTipoAtendimento2024()
-    {
-        if ($this->model->tipoAtendimentoEscolarizacao) {
-            return '{' . TipoAtendimentoTurma::ESCOLARIZACAO . '}';
-        }
-
-        if ($this->model->tipoAtendimentoAtividadeComplementar) {
-            return '{' . TipoAtendimentoTurma::ATIVIDADE_COMPLEMENTAR . '}';
-        }
-
-        if ($this->model->tipoAtendimentoAee) {
-            return '{' . TipoAtendimentoTurma::AEE . '}';
-        }
-
-        return '{' . TipoAtendimentoTurma::ESCOLARIZACAO . '}';
-    }
-
     /**
      * @return string
      */
     private function getArrayAtividadesComplementares()
     {
-        $arrayAtividades = [];
+        $arrayAtividades[] = $this->model->tipoAtividadeComplementar1;
+        $arrayAtividades[] = $this->model->tipoAtividadeComplementar2;
+        $arrayAtividades[] = $this->model->tipoAtividadeComplementar3;
+        $arrayAtividades[] = $this->model->tipoAtividadeComplementar4;
+        $arrayAtividades[] = $this->model->tipoAtividadeComplementar5;
+        $arrayAtividades[] = $this->model->tipoAtividadeComplementar6;
 
-        if ($this->model->tipoAtividadeComplementar1) {
-            $arrayAtividades[] = $this->model->tipoAtividadeComplementar1;
-        }
-        if ($this->model->tipoAtividadeComplementar2) {
-            $arrayAtividades[] = $this->model->tipoAtividadeComplementar2;
-        }
-        if ($this->model->tipoAtividadeComplementar3) {
-            $arrayAtividades[] = $this->model->tipoAtividadeComplementar3;
-        }
-        if ($this->model->tipoAtividadeComplementar4) {
-            $arrayAtividades[] = $this->model->tipoAtividadeComplementar4;
-        }
-        if ($this->model->tipoAtividadeComplementar5) {
-            $arrayAtividades[] = $this->model->tipoAtividadeComplementar5;
-        }
-        if ($this->model->tipoAtividadeComplementar6) {
-            $arrayAtividades[] = $this->model->tipoAtividadeComplementar6;
-        }
-
-        return $this->getPostgresIntegerArray($arrayAtividades);
+        return $this->getPostgresIntegerArray(array_filter($arrayAtividades));
     }
 
     private function createInepTurma(LegacySchoolClass $schoolClass): void
