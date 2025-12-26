@@ -913,19 +913,18 @@ class Registro20Import implements RegistroImportInterface
     private function getTipoAtendimento2024()
     {
         if ($this->model->tipoAtendimentoEscolarizacao) {
-            return TipoAtendimentoTurma::ESCOLARIZACAO;
+            return '{' . TipoAtendimentoTurma::ESCOLARIZACAO . '}';
         }
 
         if ($this->model->tipoAtendimentoAtividadeComplementar) {
-            return TipoAtendimentoTurma::ATIVIDADE_COMPLEMENTAR;
+            return '{' . TipoAtendimentoTurma::ATIVIDADE_COMPLEMENTAR . '}';
         }
 
         if ($this->model->tipoAtendimentoAee) {
-            return TipoAtendimentoTurma::AEE;
+            return '{' . TipoAtendimentoTurma::AEE . '}';
         }
 
-        // Valor padrão caso nenhum tipo de atendimento seja especificado
-        return TipoAtendimentoTurma::ESCOLARIZACAO;
+        return '{' . TipoAtendimentoTurma::ESCOLARIZACAO . '}';
     }
 
     /**
