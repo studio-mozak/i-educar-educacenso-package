@@ -26,6 +26,7 @@ use iEducar\Modules\Educacenso\Model\Escolaridade;
 use iEducar\Modules\Educacenso\Model\FormacaoContinuada;
 use iEducar\Modules\Educacenso\Model\Nacionalidade;
 use iEducar\Modules\Educacenso\Model\RecursosRealizacaoProvas;
+use iEducar\Modules\Educacenso\Model\Transtornos;
 use iEducar\Packages\Educacenso\Services\RegistroImportInterface;
 use iEducar\Packages\Educacenso\Services\Version2019\Models\Registro30Model;
 
@@ -170,6 +171,7 @@ class Registro30Import implements RegistroImportInterface
             'nis_pis_pasep' => $this->model->nis ?: null,
             'pais_residencia' => (int) $this->model->paisResidencia,
             'zona_localizacao_censo' => (int) $this->model->localizacaoResidencia,
+            'povo_indigena_educacenso_id' => $this->model->povoIndigena ?: null,
         ]);
 
         return $person;
@@ -347,6 +349,30 @@ class Registro30Import implements RegistroImportInterface
         if ($this->model->deficienciaVisaoMonocular) {
             $this->createDeficiency($person, Deficiencias::VISAO_MONOCULAR);
         }
+
+        if ($this->model->transtornoDiscalculia) {
+            $this->createDeficiency($person, Transtornos::DISCALCULIA);
+        }
+
+        if ($this->model->transtornoDisgrafia) {
+            $this->createDeficiency($person, Transtornos::DISGRAFIA);
+        }
+
+        if ($this->model->transtornoDislalia) {
+            $this->createDeficiency($person, Transtornos::DISLALIA);
+        }
+
+        if ($this->model->transtornoDislexia) {
+            $this->createDeficiency($person, Transtornos::DISLEXIA);
+        }
+
+        if ($this->model->transtornoTdah) {
+            $this->createDeficiency($person, Transtornos::TDAH);
+        }
+
+        if ($this->model->transtornoTpac) {
+            $this->createDeficiency($person, Transtornos::TPAC);
+        }
     }
 
     /**
@@ -483,7 +509,15 @@ class Registro30Import implements RegistroImportInterface
         }
 
         if ($this->model->recursoBraile) {
-            $arrayRecursos[] = RecursosRealizacaoProvas::MATERIAL_DIDATICO_E_PROVA_EM_BRAILLE;
+            $arrayRecursos[] = RecursosRealizacaoProvas::MATERIAL_DIDATICO_EM_BRAILLE;
+        }
+
+        if ($this->model->provaBraile) {
+            $arrayRecursos[] = RecursosRealizacaoProvas::PROVA_EM_BRAILLE;
+        }
+
+        if ($this->model->recursoTempoAdicional) {
+            $arrayRecursos[] = RecursosRealizacaoProvas::TEMPO_ADICIONAL;
         }
 
         if ($this->model->recursoNenhum) {
@@ -536,7 +570,12 @@ class Registro30Import implements RegistroImportInterface
         $this->createEmployeeGraduations($employee);
         $this->storeEmployeeCourses($employee);
 
-        $employee->tipo_ensino_medio_cursado = (int) $this->model->tipoEnsinoMedioCursado;
+        $tipoEnsinoMedio = $this->model->tipoEnsinoMedioCursado;
+        if ($tipoEnsinoMedio && is_numeric($tipoEnsinoMedio) && $tipoEnsinoMedio <= 2147483647) {
+            $employee->tipo_ensino_medio_cursado = (int) $tipoEnsinoMedio;
+        } else {
+            $employee->tipo_ensino_medio_cursado = null;
+        }
         $employee->save();
     }
 
@@ -560,9 +599,9 @@ class Registro30Import implements RegistroImportInterface
 
     private function createEmployeeGraduations(Employee $employee): void
     {
-        $arrayCursos = array_filter($this->model->formacaoCurso);
-        $arrayInstituicoes = array_filter($this->model->formacaoInstituicao);
-        $arrayAnosConclusao = array_filter($this->model->formacaoAnoConclusao);
+        $arrayCursos = array_values(array_filter($this->model->formacaoCurso));
+        $arrayInstituicoes = array_values(array_filter($this->model->formacaoInstituicao));
+        $arrayAnosConclusao = array_values(array_filter($this->model->formacaoAnoConclusao));
 
         if (empty($arrayCursos)) {
             return;
@@ -573,18 +612,28 @@ class Registro30Import implements RegistroImportInterface
         }
 
         foreach ($arrayCursos as $key => $curso) {
-            $degree = EducacensoDegree::where('curso_id', $curso)->first();
-            $institution = EducacensoInstitution::where('ies_id', $arrayInstituicoes[$key])->first();
+            $anosConclusao = $arrayAnosConclusao[$key] ?? null;
+            $iesId = $arrayInstituicoes[$key] ?? null;
 
-            if (empty($degree) || empty($institution)) {
+            // Buscar curso (aceita alfanumérico)
+            $degree = EducacensoDegree::where('curso_id', $curso)->first();
+
+            // Buscar IES (só numérico, com limite integer)
+            $institution = null;
+            if ($iesId && is_numeric($iesId) && $iesId <= 2147483647) {
+                $institution = EducacensoInstitution::where('ies_id', (int) $iesId)->first();
+            }
+
+            // Se AMBOS inválidos, pula
+            if (empty($degree) && empty($institution)) {
                 continue;
             }
 
             EmployeeGraduation::create([
                 'employee_id' => $employee->getKey(),
-                'course_id' => $degree->getKey(),
-                'completion_year' => $arrayAnosConclusao[$key] ?? null,
-                'college_id' => $institution->getKey(),
+                'course_id' => $degree ? $degree->getKey() : null,
+                'completion_year' => $anosConclusao,
+                'college_id' => $institution ? $institution->getKey() : null,
             ]);
         }
     }
@@ -665,7 +714,7 @@ class Registro30Import implements RegistroImportInterface
             $arrayCourses[] = FormacaoContinuada::EDUCACAO_BILINGUE_SURDOS;
         }
 
-        if ($this->model->formacaoContinuadaEducacaoTecnologiaInformaçãoComunicacao) {
+        if ($this->model->formacaoContinuadaEducacaoTecnologiaInformacaoComunicacao) {
             $arrayCourses[] = FormacaoContinuada::EDUCACAO_TIC;
         }
 
