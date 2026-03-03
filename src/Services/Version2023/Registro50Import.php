@@ -20,9 +20,19 @@ class Registro50Import extends Registro50Import2019
 
         $employee = parent::getEmployee();
         $schoolClass = $this->getSchoolClass();
+        
+        if (!$employee || !$schoolClass) {
+            return;
+        }
+        
         $schoolClassTeacher = LegacySchoolClassTeacher::where('turma_id', $schoolClass->getKey())
             ->where('servidor_id', $employee->getKey())
             ->first();
+            
+        if (!$schoolClassTeacher) {
+            return;
+        }
+        
         $schoolClassTeacher->unidades_curriculares = transformDBArrayInString($model->unidadesCurriculares) ?: null;
 
         $schoolClassTeacher->save();
