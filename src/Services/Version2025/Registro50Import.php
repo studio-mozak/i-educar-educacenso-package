@@ -20,15 +20,30 @@ class Registro50Import extends Registro50Import2023
 
         $employee = parent::getEmployee();
         $schoolClass = $this->getSchoolClass();
+        
+        if (!$employee || !$schoolClass) {
+            return;
+        }
+        
         $schoolClassTeacher = LegacySchoolClassTeacher::where('turma_id', $schoolClass->getKey())
             ->where('servidor_id', $employee->getKey())
             ->first();
+            
+        if (!$schoolClassTeacher) {
+            return;
+        }
+        
         if (is_array($model->areaItinerario) && count($model->areaItinerario) > 0) {
             $schoolClassTeacher->area_itinerario = $this->getPostgresIntegerArray($model->areaItinerario);
         }
         $schoolClassTeacher->leciona_itinerario_tecnico_profissional = $model->lecionaItinerarioTecnicoProfissional ?: null;
 
         $schoolClassTeacher->save();
+    }
+
+    private function getPostgresIntegerArray($array)
+    {
+        return '{' . implode(',', $array) . '}';
     }
 
     /**

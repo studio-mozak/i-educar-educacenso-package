@@ -65,6 +65,7 @@ class EducacensoImportJob implements ShouldQueue
      */
     public function handle(): void
     {
+        ini_set('memory_limit', '1G');
         DB::setDefaultConnection($this->databaseConnection);
         DB::beginTransaction();
 
