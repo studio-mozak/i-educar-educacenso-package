@@ -75,6 +75,21 @@ class Registro50Import extends Registro50Import2019
 
         $schoolClassTeacher->unidades_curriculares = transformDBArrayInString($model->unidadesCurriculares) ?: null;
 
+        $employee = parent::getEmployee();
+        $schoolClass = $this->getSchoolClass();
+        
+        if (!$employee || !$schoolClass) {
+            return;
+        }
+        
+        $schoolClassTeacher = LegacySchoolClassTeacher::where('turma_id', $schoolClass->getKey())
+            ->where('servidor_id', $employee->getKey())
+            ->first();
+            
+        if (!$schoolClassTeacher) {
+            return;
+        }
+        
         if (is_array($model->areaItinerario) && count($model->areaItinerario) > 0) {
             $schoolClassTeacher->area_itinerario = $this->getPostgresIntegerArray($model->areaItinerario);
         }
@@ -99,6 +114,11 @@ class Registro50Import extends Registro50Import2019
         }
 
         return EmployeeInep::where('cod_docente_inep', $inepDocente)->first()?->employee ?? null;
+    }
+  
+    private function getPostgresIntegerArray($array)
+    {
+        return '{' . implode(',', $array) . '}';
     }
 
     /**

@@ -570,7 +570,12 @@ class Registro30Import implements RegistroImportInterface
         $this->createEmployeeGraduations($employee);
         $this->storeEmployeeCourses($employee);
 
-        $employee->tipo_ensino_medio_cursado = (int) $this->model->tipoEnsinoMedioCursado;
+        $tipoEnsinoMedio = $this->model->tipoEnsinoMedioCursado;
+        if ($tipoEnsinoMedio && is_numeric($tipoEnsinoMedio) && $tipoEnsinoMedio <= 2147483647) {
+            $employee->tipo_ensino_medio_cursado = (int) $tipoEnsinoMedio;
+        } else {
+            $employee->tipo_ensino_medio_cursado = null;
+        }
         $employee->save();
     }
 
@@ -594,9 +599,9 @@ class Registro30Import implements RegistroImportInterface
 
     private function createEmployeeGraduations(Employee $employee): void
     {
-        $arrayCursos = array_filter($this->model->formacaoCurso);
-        $arrayInstituicoes = array_filter($this->model->formacaoInstituicao);
-        $arrayAnosConclusao = array_filter($this->model->formacaoAnoConclusao);
+        $arrayCursos = array_values(array_filter($this->model->formacaoCurso));
+        $arrayInstituicoes = array_values(array_filter($this->model->formacaoInstituicao));
+        $arrayAnosConclusao = array_values(array_filter($this->model->formacaoAnoConclusao));
 
         if (empty($arrayCursos)) {
             return;
@@ -607,18 +612,28 @@ class Registro30Import implements RegistroImportInterface
         }
 
         foreach ($arrayCursos as $key => $curso) {
-            $degree = EducacensoDegree::where('curso_id', $curso)->first();
-            $institution = EducacensoInstitution::where('ies_id', $arrayInstituicoes[$key])->first();
+            $anosConclusao = $arrayAnosConclusao[$key] ?? null;
+            $iesId = $arrayInstituicoes[$key] ?? null;
 
-            if (empty($degree) || empty($institution)) {
+            // Buscar curso (aceita alfanumérico)
+            $degree = EducacensoDegree::where('curso_id', $curso)->first();
+
+            // Buscar IES (só numérico, com limite integer)
+            $institution = null;
+            if ($iesId && is_numeric($iesId) && $iesId <= 2147483647) {
+                $institution = EducacensoInstitution::where('ies_id', (int) $iesId)->first();
+            }
+
+            // Se AMBOS inválidos, pula
+            if (empty($degree) && empty($institution)) {
                 continue;
             }
 
             EmployeeGraduation::create([
                 'employee_id' => $employee->getKey(),
-                'course_id' => $degree->getKey(),
-                'completion_year' => $arrayAnosConclusao[$key] ?? null,
-                'college_id' => $institution->getKey(),
+                'course_id' => $degree ? $degree->getKey() : null,
+                'completion_year' => $anosConclusao,
+                'college_id' => $institution ? $institution->getKey() : null,
             ]);
         }
     }

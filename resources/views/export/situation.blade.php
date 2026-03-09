@@ -6,61 +6,63 @@
 
 @section('content')
     <form id="formcadastro" target="_blank" action="{{ route('educacenso-export-situation') }}" method="post">
-        <table class="tablecadastro" width="100%" border="0" cellpadding="2" cellspacing="0">
-            <tbody>
-            <tr>
-                <td class="formdktd" colspan="2" height="24"><b>Exportações</b></td>
-            </tr>
-            <tr>
-                <td class="formlttd" valign="top">
-                    <span class="form">
-                        Ano
-                    </span>
-                    <span class="campo_obrigatorio">*</span>
-                </td>
-                <td class="formlttd" valign="top">
-                    <span class="form">
-                        <select name="ano" id="ano" required class="formcampo">
-                            @foreach($years as $year)
-                                <option value="{{ $year }}">{{ $year }}</option>
-                            @endforeach
-                        </select>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="formlttd" valign="top">
-                    <span class="form">
-                        Instituição
-                    </span>
-                    <span class="campo_obrigatorio">*</span>
-                </td>
-                <td class="formlttd" valign="top">
-                    <span class="form">
-                        @include('form.select-institution')
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="formmdtd" valign="top">
-                    <span class="form">
-                        Escola
-                    </span>
-                    <span class="campo_obrigatorio">*</span>
-                </td>
-                <td class="formmdtd" valign="top">
-                    <span class="form">
-                        @include('form.select-school')
-                    </span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <h1 class="title_ensinus"><strong>Exportações</strong></h1>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="tablecadastro" width="100%" border="0" cellpadding="2" cellspacing="0">
+                        <tbody>
+                        <tr>
+                            <td class="formlttd" valign="top">
+                                <span class="form">
+                                    Ano
+                                </span>
+                                <span class="campo_obrigatorio">*</span>
+                            </td>
+                            <td class="formlttd" valign="top">
+                                <span class="form">
+                                    <select name="ano" id="ano" required class="formcampo">
+                                        @foreach($years as $year)
+                                            <option value="{{ $year }}">{{ $year }}</option>
+                                        @endforeach
+                                    </select>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="formlttd" valign="top">
+                                <span class="form">
+                                    Instituição
+                                </span>
+                                <span class="campo_obrigatorio">*</span>
+                            </td>
+                            <td class="formlttd" valign="top">
+                                <span class="form">
+                                    @include('form.select-institution')
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="formmdtd" valign="top">
+                                <span class="form">
+                                    Escola
+                                </span>
+                                <span class="campo_obrigatorio">*</span>
+                            </td>
+                            <td class="formmdtd" valign="top">
+                                <span class="form">
+                                    @include('form.select-school')
+                                </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
 
-        <div class="separator"></div>
-
-        <div style="text-align: center; margin-bottom: 10px">
-            <button id="export-button" class="btn-green" type="submit">Exportar</button>
+                    <div style="text-align: center; margin-bottom: 10px">
+                        <button id="export-button" class="new-button" type="submit">Exportar</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <style>
@@ -125,6 +127,9 @@
 
             .text-warning {
                 color: #958f73;
+            }
+            .tablecadastro {
+                margin-bottom: 20px;
             }
         </style>
         <link type='text/css' rel='stylesheet' href='{{ Asset::get("/vendor/legacy/Portabilis/Assets/Plugins/Chosen/chosen.css") }}'>
