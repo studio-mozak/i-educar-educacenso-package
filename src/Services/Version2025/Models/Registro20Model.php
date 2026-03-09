@@ -18,7 +18,7 @@ class Registro20Model extends Registro20
 
         if (is_null($arrayColumns[4]) || $arrayColumns[4] === '') {
             throw ValidationException::withMessages([
-                'error' => 'Você está tentando importar um arquivo com turmas inválidas. o i-Educar aceita apenas arquivos oriundos do sistema do MEC.',
+                'error' => 'Você está tentando importar um arquivo com turmas inválidas. o Ensinus aceita apenas arquivos oriundos do sistema do MEC.',
             ]);
         }
 

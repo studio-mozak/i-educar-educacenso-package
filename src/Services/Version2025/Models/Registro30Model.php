@@ -65,7 +65,8 @@ class Registro30Model extends Registro30
         $this->municipioResidencia = $arrayColumns[53];
         $this->localizacaoResidencia = $arrayColumns[54];
         $this->localizacaoDiferenciada = $arrayColumns[55];
-        $this->escolaridade = $arrayColumns[56];
+        $this->justificativaFaltaDocumentacao = $arrayColumns[56];
+        $this->escolaridade = $arrayColumns[57];
         $this->tipoEnsinoMedioCursado = $arrayColumns[57];
         $this->formacaoCurso = [
             $arrayColumns[58],
