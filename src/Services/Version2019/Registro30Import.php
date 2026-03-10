@@ -597,7 +597,7 @@ class Registro30Import implements RegistroImportInterface
         $employee->save();
     }
 
-    private function createEmployeeGraduations(Employee $employee): void
+    protected function createEmployeeGraduations(Employee $employee): void
     {
         $arrayCursos = array_values(array_filter($this->model->formacaoCurso));
         $arrayInstituicoes = array_values(array_filter($this->model->formacaoInstituicao));

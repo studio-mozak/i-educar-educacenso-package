@@ -8,11 +8,25 @@ use iEducar\Packages\Educacenso\Services\Version2024\Registro00Import;
 
 class ImportService extends ImportServiceVersion2022
 {
-    /**
-     * Retorna o ano a que o service se refere
-     *
-     * @return int
-     */
+    public static array $inepsServidores = [];
+    public static array $inepsAlunos = [];
+
+    public function import($importString, $user): void
+    {
+        foreach ($importString as $line) {
+            $cols = explode(self::DELIMITER, $line);
+            if ($cols[0] === '50' && !empty($cols[3])) {
+                self::$inepsServidores[$cols[3]] = true;
+            } elseif ($cols[0] === '40' && !empty($cols[4])) {
+                self::$inepsServidores[$cols[4]] = true;
+            } elseif ($cols[0] === '60' && !empty($cols[3])) {
+                self::$inepsAlunos[$cols[3]] = true;
+            }
+        }
+
+        parent::import($importString, $user);
+    }
+
     public function getYear()
     {
         return 2025;

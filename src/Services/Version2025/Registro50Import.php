@@ -10,6 +10,7 @@ use App\Models\LegacyInstitution;
 use App\Models\LegacySchoolClass;
 use App\Models\LegacySchoolClassTeacher;
 use App\Models\SchoolClassInep;
+use App\Models\EmployeeAllocation;
 use iEducar\Packages\Educacenso\Services\Version2019\Registro50Import as Registro50Import2019;
 use iEducar\Packages\Educacenso\Services\Version2025\Models\Registro50Model;
 use Illuminate\Support\Facades\Log;
@@ -18,6 +19,8 @@ class Registro50Import extends Registro50Import2019
 {
     public function import(RegistroEducacenso $model, $year, $user): void
     {
+        $this->user = $user;
+
         $schoolClass = $this->findSchoolClass($model->inepTurma);
 
         if (!$schoolClass) {
@@ -75,27 +78,37 @@ class Registro50Import extends Registro50Import2019
 
         $schoolClassTeacher->unidades_curriculares = transformDBArrayInString($model->unidadesCurriculares) ?: null;
 
-        $employee = parent::getEmployee();
-        $schoolClass = $this->getSchoolClass();
-        
-        if (!$employee || !$schoolClass) {
-            return;
-        }
-        
-        $schoolClassTeacher = LegacySchoolClassTeacher::where('turma_id', $schoolClass->getKey())
-            ->where('servidor_id', $employee->getKey())
-            ->first();
-            
-        if (!$schoolClassTeacher) {
-            return;
-        }
-        
         if (is_array($model->areaItinerario) && count($model->areaItinerario) > 0) {
             $schoolClassTeacher->area_itinerario = $this->getPostgresIntegerArray($model->areaItinerario);
         }
         $schoolClassTeacher->leciona_itinerario_tecnico_profissional = $model->lecionaItinerarioTecnicoProfissional ?: null;
 
         $schoolClassTeacher->save();
+
+        $this->createEmployeeAllocationIfNotExists($employee, $schoolClass->ref_ref_cod_escola, $year);
+    }
+
+    private function createEmployeeAllocationIfNotExists(Employee $employee, int $schoolId, int $year): void
+    {
+        $exists = EmployeeAllocation::where('ref_cod_servidor', $employee->getKey())
+            ->where('ref_cod_escola', $schoolId)
+            ->where('ano', $year)
+            ->where('ativo', 1)
+            ->exists();
+
+        if ($exists) {
+            return;
+        }
+
+        EmployeeAllocation::create([
+            'ref_cod_servidor'        => $employee->getKey(),
+            'ref_cod_escola'          => $schoolId,
+            'ref_ref_cod_instituicao' => app(\App\Models\LegacyInstitution::class)->getKey(),
+            'ano'                     => $year,
+            'ativo'                   => 1,
+            'carga_horaria'           => 0,
+            'ref_usuario_cad'         => $this->user->getKey(),
+        ]);
     }
 
     private function findSchoolClass(?string $inepTurma): ?LegacySchoolClass
