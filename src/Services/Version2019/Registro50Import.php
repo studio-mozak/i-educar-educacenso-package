@@ -115,13 +115,13 @@ class Registro50Import implements RegistroImportInterface
      */
     private function setEmployeeAsTeacher(Employee $employee): void
     {
-        if ($this->employeeHasTeacherRole($employee)) {
+        if ($this->employeeHasRole($employee)) {
             return;
         }
 
-        $defaultRole = $this->getDefaultTeacherRole();
+        $role = $this->getOrCreateRoleByFunction($this->model->funcaoDocente);
         LegacyEmployeeRole::create([
-            'ref_cod_funcao' => $defaultRole->id,
+            'ref_cod_funcao' => $role->id,
             'ref_cod_servidor' => $employee->id,
             'ref_ref_cod_instituicao' => $this->institution->id,
         ]);
@@ -130,35 +130,41 @@ class Registro50Import implements RegistroImportInterface
     /**
      * @param $employee Employee
      */
-    private function employeeHasTeacherRole(Employee $employee): bool
+    private function employeeHasRole(Employee $employee): bool
     {
         return LegacyEmployeeRole::where('ref_cod_servidor', $employee->id)
             ->whereHas('role', function ($query): void {
                 $query->ativo();
-                $query->where('professor', 1);
             })->exists();
     }
 
-    private function getDefaultTeacherRole(): LegacyRole
+    private function getOrCreateRoleByFunction(int $funcaoEducacenso): LegacyRole
     {
-        if (! empty($this->_legacyRole)) {
-            return $this->_legacyRole;
-        }
+        $rolesMap = [
+            1 => ['nome' => 'Professor', 'abrev' => 'Prof', 'professor' => 1],
+            2 => ['nome' => 'Auxiliar de Educação Infantil', 'abrev' => 'Aux. Ed. Inf.', 'professor' => 0],
+            3 => ['nome' => 'Auxiliar/Assistente Educacional', 'abrev' => 'Aux. Educ.', 'professor' => 0],
+            4 => ['nome' => 'Professor de Atendimento Educacional Especializado', 'abrev' => 'Prof. AEE', 'professor' => 1],
+            5 => ['nome' => 'Professor Titular - Turma EAD', 'abrev' => 'Prof EAD', 'professor' => 1],
+            6 => ['nome' => 'Professor Tutor - Turma EAD', 'abrev' => 'Tutor EAD', 'professor' => 1],
+            7 => ['nome' => 'Profissional/Monitor de Atividade Complementar', 'abrev' => 'Monitor', 'professor' => 0],
+            8 => ['nome' => 'Tradutor/Intérprete de Libras', 'abrev' => 'Intérprete', 'professor' => 0],
+        ];
 
-        $this->_legacyRole = LegacyRole::firstOrCreate(
+        $roleData = $rolesMap[$funcaoEducacenso] ?? ['nome' => 'Professor', 'abrev' => 'Prof', 'professor' => 1];
+
+        return LegacyRole::firstOrCreate(
             [
                 'ref_cod_instituicao' => $this->institution->id,
-                'professor' => 1,
+                'nm_funcao' => $roleData['nome'],
                 'ativo' => 1,
             ],
             [
                 'ref_usuario_cad' => $this->user->id,
-                'nm_funcao' => 'Professor',
-                'abreviatura' => 'Prof',
+                'abreviatura' => $roleData['abrev'],
+                'professor' => $roleData['professor'],
             ]
         );
-
-        return $this->_legacyRole;
     }
 
     /**

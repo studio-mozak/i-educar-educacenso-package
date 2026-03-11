@@ -21,15 +21,22 @@ class Registro40Import extends Registro40Import2019
      */
     public function import(RegistroEducacenso $model, $year, $user): void
     {
+        \Log::info('[REGISTRO40-V2020] Iniciando importação', [
+            'cpf' => $model->codigoPessoa ?? 'sem_cpf',
+            'inep' => $model->inepGestor ?? 'sem_inep',
+        ]);
+        
         $this->user = $user;
         $this->model = $model;
         $this->institution = app(LegacyInstitution::class);
 
         $employee = $this->getEmployee();
         if (empty($employee)) {
+            \Log::warning('[REGISTRO40-V2020] Employee não encontrado');
             return;
         }
-
+        
+        \Log::info('[REGISTRO40-V2020] Employee encontrado, criando gestor');
         $this->createOrUpdateManager($employee);
     }
 
@@ -47,17 +54,53 @@ class Registro40Import extends Registro40Import2019
     private function getEmployee(): ?Employee
     {
         $inepNumber = $this->model->inepGestor;
-        if (empty($inepNumber)) {
+        
+        \Log::info('[REGISTRO40-V2020] Buscando employee', [
+            'inep' => $inepNumber ?? 'vazio',
+            'cpf' => $this->model->codigoPessoa ?? 'vazio',
+        ]);
+        
+        // Tentar buscar por INEP primeiro
+        if ($inepNumber) {
+            $employeeInep = EmployeeInep::where('cod_docente_inep', $inepNumber)->first();
+            if ($employeeInep && $employeeInep->employee) {
+                \Log::info('[REGISTRO40-V2020] Employee encontrado por INEP');
+                return $employeeInep->employee;
+            }
+        }
+        
+        // Se não encontrou por INEP, buscar por CPF
+        $cpf = preg_replace('/\D/', '', $this->model->codigoPessoa ?? '');
+        if (!$cpf) {
+            \Log::warning('[REGISTRO40-V2020] CPF vazio');
             return null;
         }
-
-        $employeeInep = EmployeeInep::where('cod_docente_inep', $inepNumber)->first();
-
-        if (empty($employeeInep)) {
-            return null;
+        
+        \Log::info('[REGISTRO40-V2020] Buscando por CPF');
+        $person = \App\Models\LegacyIndividual::where('cpf', $cpf)->first();
+        
+        if ($person) {
+            \Log::info('[REGISTRO40-V2020] Pessoa encontrada, criando employee');
+            $employee = Employee::firstOrCreate([
+                'cod_servidor' => $person->idpes,
+                'ref_cod_instituicao' => $this->institution->id,
+            ], [
+                'carga_horaria' => 0,
+                'data_cadastro' => now(),
+            ]);
+            
+            if ($inepNumber && !EmployeeInep::where('cod_docente_inep', $inepNumber)->exists()) {
+                EmployeeInep::create([
+                    'cod_servidor' => $employee->cod_servidor,
+                    'cod_docente_inep' => $inepNumber,
+                ]);
+            }
+            
+            return $employee;
         }
-
-        return $employeeInep->employee ?? null;
+        
+        \Log::warning('[REGISTRO40-V2020] Pessoa não encontrada, não será criada');
+        return null;
     }
 
     private function createOrUpdateManager(Employee $employee): void
