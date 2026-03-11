@@ -76,6 +76,15 @@ class Registro00Import implements RegistroImportInterface
             return $schoolInep->school;
         }
 
+        // Segunda verificação dentro da transaction do job para evitar race condition em retries
+        $schoolInep = SchoolInep::where('cod_escola_inep', $this->model->codigoInep)
+            ->lockForUpdate()
+            ->first();
+
+        if ($schoolInep) {
+            return $schoolInep->school;
+        }
+
         $institution = LegacyInstitution::whereNull('orgao_regional')->first();
         if ($institution instanceof LegacyInstitution) {
             $institution->orgao_regional = $this->model->orgaoRegional;
