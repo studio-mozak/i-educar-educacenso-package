@@ -30,7 +30,7 @@ abstract class ImportService
      *
      * @param  string  $line
      */
-    private function importLine($line, $user): void
+    protected function importLine($line, $user): void
     {
         $lineId = $this->getLineId($line);
 

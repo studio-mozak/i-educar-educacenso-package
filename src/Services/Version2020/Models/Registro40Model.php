@@ -13,8 +13,8 @@ class Registro40Model extends Registro40
 
         $this->registro = $arrayColumns[1];
         $this->inepEscola = $arrayColumns[2];
-        $this->codigoPessoa = $arrayColumns[3];
-        $this->inepGestor = $arrayColumns[4];
+        $this->inepGestor = $arrayColumns[3];
+        $this->codigoPessoa = $arrayColumns[4];
         $this->cargo = $arrayColumns[5] ?: null;
         $this->criterioAcesso = $arrayColumns[6] ?: null;
         $this->tipoVinculo = $arrayColumns[7] ?: null;
