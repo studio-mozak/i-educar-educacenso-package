@@ -40,7 +40,7 @@ class EducacensoImportJob implements ShouldQueue
      */
     private $registrationDate;
 
-    public $timeout = 600;
+    public $timeout = 3600;
 
     /**
      * Create a new job instance.
