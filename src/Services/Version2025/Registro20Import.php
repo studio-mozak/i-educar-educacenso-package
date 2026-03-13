@@ -7,6 +7,7 @@ use App\Models\Educacenso\RegistroEducacenso;
 use App\Models\LegacySchoolClass;
 use iEducar\Packages\Educacenso\Services\Version2023\Registro20Import as Registro20Import2023;
 use iEducar\Packages\Educacenso\Services\Version2025\Models\Registro20Model;
+use Illuminate\Support\Facades\Log;
 
 class Registro20Import extends Registro20Import2023
 {
@@ -22,7 +23,23 @@ class Registro20Import extends Registro20Import2023
 
         $schoolClassInep = parent::getSchoolClass();
 
+        if (empty($schoolClassInep)) {
+            Log::channel('educacenso_skipped')->warning('Registro20 (2025): Turma não encontrada após import', [
+                'inep_escola' => $model->codigoEscolaInep,
+                'inep_turma' => $model->inepTurma,
+            ]);
+            return;
+        }
+
         $schoolClass = LegacySchoolClass::find($schoolClassInep->cod_turma);
+
+        if (empty($schoolClass)) {
+            Log::channel('educacenso_skipped')->warning('Registro20 (2025): LegacySchoolClass não encontrada', [
+                'inep_turma' => $model->inepTurma,
+                'cod_turma' => $schoolClassInep->cod_turma,
+            ]);
+            return;
+        }
 
         $schoolClass->etapa_agregada = $model->etapaAgregada ?: null;
         $schoolClass->classe_especial = $model->classeEspecial;

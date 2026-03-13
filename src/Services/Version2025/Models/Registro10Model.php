@@ -14,7 +14,7 @@ class Registro10Model extends Registro10
 
         if (is_null($arrayColumns[2]) || $arrayColumns[2] === '') {
             throw ValidationException::withMessages([
-                'error' => 'Você está tentando importar um arquivo com escola(s) inválida(s). o i-Educar aceita apenas arquivos oriundos do sistema do MEC.',
+                'error' => 'Você está tentando importar um arquivo com escola(s) inválida(s). o Ensinus aceita apenas arquivos oriundos do sistema do MEC.',
             ]);
         }
 
@@ -98,7 +98,7 @@ class Registro10Model extends Registro10
         $this->dependenciaAreaHorta = $arrayColumns[78];
         $this->dependenciaNenhumaRelacionada = $arrayColumns[79];
         $this->recursoCorrimao = $arrayColumns[80];
-        $this->recursoElevador = $arrayColumns[71];
+        $this->recursoElevador = $arrayColumns[81];
         $this->recursoPisosTateis = $arrayColumns[82];
         $this->recursoPortaVaoLivre = $arrayColumns[83];
         $this->recursoRampas = $arrayColumns[84];
