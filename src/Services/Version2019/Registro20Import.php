@@ -104,7 +104,7 @@ class Registro20Import implements RegistroImportInterface
                 'atividades_complementares' => $this->getArrayAtividadesComplementares(),
                 'local_funcionamento_diferenciado' => (int) $model->localFuncionamentoDiferenciado,
                 'etapa_educacenso' => (int) $model->etapaEducacenso,
-                'max_aluno' => 99,
+                'max_aluno' => $level->max_aluno_padrao ?: 99,
                 'ativo' => 1,
                 'multiseriada' => 0,
                 'visivel' => true,
